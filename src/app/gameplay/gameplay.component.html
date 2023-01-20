@@ -1,0 +1,6 @@
+<!-- {{items[0] |json}} -->
+<div *ngIf="items">
+    <ul *ngFor="let name of items[0].users">
+        {{name.name}}
+    </ul>
+</div>

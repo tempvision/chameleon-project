@@ -1,0 +1,30 @@
+<form [formGroup]="lobbyForm">
+    <h2>Join Lobby</h2>
+    <div class="container-centered">
+        <p>
+            <mat-form-field appearance="outline">
+                <mat-label>Your Name</mat-label>
+                <input matInput placeholder="your name" type="text" formControlName="userName">
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="outline">
+                <mat-label>Lobby Name</mat-label>
+                <input matInput placeholder="lobby name" type="text" formControlName="lobbyName">
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="outline">
+                <mat-label>Lobby Password</mat-label>
+                <input matInput placeholder="password" type="password" formControlName="lobbyPassword">
+            </mat-form-field>
+        </p>
+        <hr>
+        <button class="center-button" mat-raised-button color="primary" type="submit" (click)="joinLobby()">
+            Join Lobby
+        </button>
+    </div>
+
+</form>
