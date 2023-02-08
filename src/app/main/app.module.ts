@@ -13,6 +13,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { HomeModule } from '../home/home.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameplayModule } from '../gameplay/gameplay.module';
+import { LobbyModule } from '../lobby/lobby.module';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import { GameplayModule } from '../gameplay/gameplay.module';
     AngularFireDatabaseModule,
     HomeModule,
     GameplayModule,
+    LobbyModule,
     BrowserAnimationsModule
   ],
   providers: [],

@@ -30,13 +30,19 @@ export class CreateLobbyComponent implements OnInit {
       return;
     }
 
+    const users = this.db.list('/users')
+    const newUserRef = users.push(this.getUserName()?.value) // create user
+    const newUserId = newUserRef.key;
+
+
     const itemsRef = this.db.list('/lobbies');
 
     const lobbyInfo = {
       "lobbyName": this.getLobbyName()?.value,
       "lobbyPassword": this.getLobbyPassword()?.value,
       "users": [{
-        name: this.getUserName()?.value
+        name: this.getUserName()?.value,
+        userId: newUserId
       }]
     }
 
@@ -48,7 +54,7 @@ export class CreateLobbyComponent implements OnInit {
       uniqueId: newPostId // add the unique id to the new item
     })
 
-    this.router.navigate(['game', newPostId]);
+    this.router.navigate(['lobby', newPostId]);
     this.dialogRef.close();
 
   }

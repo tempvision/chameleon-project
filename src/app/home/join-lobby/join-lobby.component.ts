@@ -39,18 +39,19 @@ export class JoinLobbyComponent implements OnInit {
       return;
     }
 
-    const lobby = this.getLobbyName();
-    const searchedLobby = this.items.findIndex((el: any) => el.lobbyName === "lena");
+    const lobby = this.getLobbyName()?.value;
+    const searchedLobby = this.items.findIndex((el: any) => el.lobbyName === lobby);
     console.log(this.items[searchedLobby])
     const foundLobby = this.items[searchedLobby]
 
 
     if (searchedLobby > -1) {
+      // TO DO: add the unique user id to the lobby
       const ref = this.db.object(`lobbies/${foundLobby.uniqueId}`);
       foundLobby.users.push({ name: this.getUserName()?.value })
       ref.update(foundLobby)
+      this.router.navigate(['lobby', foundLobby.uniqueId]);
       this.dialogRef.close();
-      this.router.navigate(['game', foundLobby.uniqueId]);
     } else {
       return;
     }
