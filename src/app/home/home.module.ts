@@ -32,7 +32,6 @@ import { JoinLobbyComponent } from './join-lobby/join-lobby.component';
     ReactiveFormsModule,
     FlexLayoutModule,
     MatCommonModule,
-    MatButtonModule,
     MatDividerModule,
     MatDialogModule,
     MatInputModule,

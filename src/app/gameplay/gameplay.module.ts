@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common';
 import { GameplayRoutingModule } from './gameplay-routing.module';
 import { GameplayComponent } from './gameplay.component';
 
+import { MatTableModule } from '@angular/material/table';
+
+
 
 @NgModule({
   declarations: [
@@ -11,7 +14,8 @@ import { GameplayComponent } from './gameplay.component';
   ],
   imports: [
     CommonModule,
-    GameplayRoutingModule
+    GameplayRoutingModule,
+    MatTableModule
   ]
 })
 export class GameplayModule { }
