@@ -1,6 +1,6 @@
 <table mat-table [dataSource]="items" class="mat-elevation-z8" *ngIf="selectedRow">
   <ng-container matColumnDef="category">
-    <th mat-header-cell *matHeaderCellDef>Category</th>
+    <th mat-header-cell *matHeaderCellDef>{{currentCategory}}</th>
     <td mat-cell *matCellDef="let element; let i = index">{{ i + 1 }}</td>
   </ng-container>
 
