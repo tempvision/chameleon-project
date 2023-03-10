@@ -14,25 +14,21 @@ export class GameplayComponent implements OnInit {
     'key'
   ]
   categories = []
+  categorySelected!: boolean;
+  selectedRow: any
+  allCategories: any
 
   constructor(
     private db: AngularFireDatabase,
   ) { }
 
   ngOnInit(): void {
-    // this.db.list('/cards').valueChanges().subscribe((res: any) => {
-    //   this.items = res[0].reduce((result: any, value: any, index: any) => {
-    //     const chunkIndex = Math.floor(index / 4);
-    //     if (!result[chunkIndex]) {
-    //       result[chunkIndex] = [];
-    //     }
-    //     result[chunkIndex].push(value);
-    //     return result;
-    //   }, []);
-    // })
+    this.db.list('/cards').valueChanges().subscribe((res: any) => {
+  
+    })
     const objectRef = this.db.object('/cards');
     objectRef.valueChanges().subscribe((data: any) => {
-      console.log(data)
+      this.allCategories = data
       this.categories = Object.keys(data).map(el => {
         const name = el
         const obj = {
@@ -40,9 +36,21 @@ export class GameplayComponent implements OnInit {
         }
         return obj;
       }) as any;
-      console.log(this.categories)
     });
 
+  }
+
+  selectRow(event: any) {
+    console.log(event)
+    this.selectedRow = true;
+    this.items =this.allCategories[event.key].slice(0, 16).reduce((result: any, value: any, index: any) => {
+      const chunkIndex = Math.floor(index / 4);
+      if (!result[chunkIndex]) {
+        result[chunkIndex] = [];
+      }
+      result[chunkIndex].push(value);
+      return result;
+    }, []);
   }
 
 }
