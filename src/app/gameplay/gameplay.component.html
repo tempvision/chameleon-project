@@ -1,31 +1,39 @@
-<table mat-table [dataSource]="dataSource">
+<!-- <table mat-table [dataSource]="items" class="mat-elevation-z8">
+  <ng-container matColumnDef="category">
+    <th mat-header-cell *matHeaderCellDef>Category</th>
+    <td mat-cell *matCellDef="let element; let i = index">{{ i + 1 }}</td>
+  </ng-container>
 
-    <ng-container matColumnDef="category">
-        <mat-header-cell *matHeaderCellDef>{{ items.categoryName | async}}</mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.column1 }}</mat-cell>
-    </ng-container>
+  <ng-container matColumnDef="a">
+    <th mat-header-cell *matHeaderCellDef>A</th>
+    <td mat-cell *matCellDef="let element">{{ element[0] }}</td>
+  </ng-container>
 
-    <ng-container matColumnDef="a">
-        <mat-header-cell *matHeaderCellDef>A</mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.column2 }}</mat-cell>
-    </ng-container>
+  <ng-container matColumnDef="b">
+    <th mat-header-cell *matHeaderCellDef>B</th>
+    <td mat-cell *matCellDef="let element">{{ element[1] }}</td>
+  </ng-container>
 
-    <ng-container matColumnDef="b">
-        <mat-header-cell *matHeaderCellDef>B</mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.column3 }}</mat-cell>
-    </ng-container>
+  <ng-container matColumnDef="c">
+    <th mat-header-cell *matHeaderCellDef>C</th>
+    <td mat-cell *matCellDef="let element">{{ element[2] }}</td>
+  </ng-container>
 
-    <ng-container matColumnDef="c">
-        <mat-header-cell *matHeaderCellDef>C</mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.column4 }}</mat-cell>
-    </ng-container>
+  <ng-container matColumnDef="d">
+    <th mat-header-cell *matHeaderCellDef>D</th>
+    <td mat-cell *matCellDef="let element">{{ element[3] }}</td>
+  </ng-container>
 
-    <ng-container matColumnDef="d">
-        <mat-header-cell *matHeaderCellDef>D</mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.column5 }}</mat-cell>
-    </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table> -->
 
-    <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: tableColumns;" [ngClass]="{ 'even-row': row.even }"></mat-row>
+<mat-table [dataSource]="categories" class="mat-elevation-z8">
+  <ng-container matColumnDef="key">
+    <mat-header-cell mat-header-cell *matHeaderCellDef> Select Category </mat-header-cell>
+    <mat-cell mat-cell *matCellDef="let element"> {{element.key}} </mat-cell>
+  </ng-container>
 
-</table>
+  <mat-header-row *matHeaderRowDef="category"></mat-header-row>
+  <mat-row matRipple *matRowDef="let row; columns: category;"></mat-row>
+</mat-table>

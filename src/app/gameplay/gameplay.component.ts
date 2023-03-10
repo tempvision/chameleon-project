@@ -8,31 +8,41 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./gameplay.component.css']
 })
 export class GameplayComponent implements OnInit {
-  items!: any;
-  tableColumns: Array<string> = ['category', 'a', 'b', 'c', 'd']
-
-  dataSource = new MatTableDataSource([
-    {
-      column1: '1', column2: 'Second', column3: 'Third', column4: 'Fourth', column5: 'Fifth'
-    },
-    {
-      column1: '2', column2: 'Second', column3: 'Third', column4: 'Fourth', column5: 'Fifth'
-    },
-    {
-      column1: '3', column2: 'Second', column3: 'Third', column4: 'Fourth', column5: 'Fifth'
-    },
-    { column1: '4', column2: 'Second', column3: 'Third', column4: 'Fourth', column5: 'Fifth' }
-  ]);
+  items: Array<any> = [];
+  displayedColumns: string[] = ['category', 'a', 'b', 'c', 'd'];
+  category = [
+    'key'
+  ]
+  categories = []
 
   constructor(
     private db: AngularFireDatabase,
   ) { }
 
   ngOnInit(): void {
-    this.db.list('/cards').valueChanges().subscribe(res => {
-      this.items = res[0];
-      console.log(res[0])
-    })
+    // this.db.list('/cards').valueChanges().subscribe((res: any) => {
+    //   this.items = res[0].reduce((result: any, value: any, index: any) => {
+    //     const chunkIndex = Math.floor(index / 4);
+    //     if (!result[chunkIndex]) {
+    //       result[chunkIndex] = [];
+    //     }
+    //     result[chunkIndex].push(value);
+    //     return result;
+    //   }, []);
+    // })
+    const objectRef = this.db.object('/cards');
+    objectRef.valueChanges().subscribe((data: any) => {
+      console.log(data)
+      this.categories = Object.keys(data).map(el => {
+        const name = el
+        const obj = {
+          key: name
+        }
+        return obj;
+      }) as any;
+      console.log(this.categories)
+    });
+
   }
 
 }
