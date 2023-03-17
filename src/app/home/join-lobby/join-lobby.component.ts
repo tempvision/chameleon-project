@@ -21,7 +21,6 @@ export class JoinLobbyComponent implements OnInit {
     private dialogRef: MatDialogRef<JoinLobbyComponent>) {
     this.db.list('/lobbies').valueChanges().subscribe(res => {
       this.items = res;
-      console.log(res)
     })
   }
 
@@ -41,15 +40,15 @@ export class JoinLobbyComponent implements OnInit {
 
     const lobby = this.getLobbyName()?.value;
     const searchedLobby = this.items.findIndex((el: any) => el.lobbyName === lobby);
-    console.log(this.items[searchedLobby])
     const foundLobby = this.items[searchedLobby]
 
 
     if (searchedLobby > -1) {
       // TO DO: add the unique user id to the lobby
       const ref = this.db.object(`lobbies/${foundLobby.uniqueId}`);
-      foundLobby.users.push({ name: this.getUserName()?.value })
+      const userRef = foundLobby.users.push({ name: this.getUserName()?.value, admin: false })
       ref.update(foundLobby)
+      sessionStorage.setItem('user', `{ "name": "${this.getUserName()?.value}", "admin": false }`)
       this.router.navigate(['lobby', foundLobby.uniqueId]);
       this.dialogRef.close();
     } else {
@@ -58,7 +57,6 @@ export class JoinLobbyComponent implements OnInit {
 
   }
 
-
   getUserName() {
     return this.lobbyForm.get('userName');
   }
@@ -66,7 +64,6 @@ export class JoinLobbyComponent implements OnInit {
   getLobbyPassword() {
     return this.lobbyForm.get('lobbyPassword');
   }
-
 
   getLobbyName() {
     return this.lobbyForm.get('lobbyName');

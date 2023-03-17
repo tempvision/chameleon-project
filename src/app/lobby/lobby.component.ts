@@ -9,19 +9,22 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class LobbyComponent implements OnInit {
   currentUsers!: Array<any>;
-  lobbyId!: string;
+  lobbyId!: any;
+  isAdmin!: boolean;
 
   constructor(
     private db: AngularFireDatabase,
     private activatedRoute: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {
+    console.log(sessionStorage.getItem('user'))
+    this.isAdmin = JSON.parse(sessionStorage.getItem('user') as any).admin;
+  }
 
   ngOnInit(): void {
-
     this.lobbyId = this.activatedRoute.snapshot.paramMap.get('id')!;
-    this.db.list(`/lobbies/${this.activatedRoute.snapshot.paramMap.get('id')}`).valueChanges().subscribe((res: any) => {
-      this.currentUsers = res[3];
+    this.db.list(`/lobbies/${this.lobbyId as string}`).valueChanges().subscribe((res: any) => {
+      this.currentUsers = res[4];
     })
   }
 

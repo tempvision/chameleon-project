@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 })
 export class CreateLobbyComponent implements OnInit {
   lobbyForm!: FormGroup;
+  allLobbies: any;
   constructor(private fb: FormBuilder,
     private db: AngularFireDatabase,
     private router: Router,
@@ -23,6 +24,12 @@ export class CreateLobbyComponent implements OnInit {
       lobbyPassword: ['', Validators.required],
     });
 
+    const objectRef = this.db.object('/lobbies');
+    objectRef.valueChanges().subscribe(res => {
+      this.allLobbies = res;
+      // this.deleteOldLobbies()
+    })
+
   }
 
   createLobby() {
@@ -34,7 +41,6 @@ export class CreateLobbyComponent implements OnInit {
     const newUserRef = users.push(this.getUserName()?.value) // create user
     const newUserId = newUserRef.key;
 
-
     const itemsRef = this.db.list('/lobbies');
 
     const lobbyInfo = {
@@ -42,8 +48,10 @@ export class CreateLobbyComponent implements OnInit {
       "lobbyPassword": this.getLobbyPassword()?.value,
       "users": [{
         name: this.getUserName()?.value,
-        userId: newUserId
-      }]
+        userId: newUserId,
+        admin: true
+      }],
+      "timestamp": new Date().getTime(),
     }
 
     const newPostRef = itemsRef.push(lobbyInfo); // get the ref of the newly created item
@@ -53,6 +61,8 @@ export class CreateLobbyComponent implements OnInit {
       ...lobbyInfo,
       uniqueId: newPostId // add the unique id to the new item
     })
+
+    sessionStorage.setItem('user', `{ name: ${this.getUserName()?.value}, admin: true }`)
 
     this.router.navigate(['lobby', newPostId]);
     this.dialogRef.close();
@@ -71,6 +81,13 @@ export class CreateLobbyComponent implements OnInit {
 
   getLobbyName() {
     return this.lobbyForm.get('lobbyName');
+  }
+
+  deleteOldLobbies() {
+    const millisecondsInOneDay: number = 86400000
+    const currentDate: number = new Date().getTime()
+    const olderThenOneDay = Object.keys(this.allLobbies).filter((el: any) => currentDate - el.timestamp > millisecondsInOneDay)
+    // delete the older ones
   }
 
 }

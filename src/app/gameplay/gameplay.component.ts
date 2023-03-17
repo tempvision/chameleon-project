@@ -42,7 +42,6 @@ export class GameplayComponent implements OnInit {
   }
 
   selectRow(event: any) {
-    console.log(event)
     this.selectedRow = true;
     this.currentCategory = this.allCategories[event.key].slice(16)
     this.items =this.allCategories[event.key].slice(0, 16).reduce((result: any, value: any, index: any) => {
