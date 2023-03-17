@@ -62,7 +62,7 @@ export class CreateLobbyComponent implements OnInit {
       uniqueId: newPostId // add the unique id to the new item
     })
 
-    sessionStorage.setItem('user', `{ name: ${this.getUserName()?.value}, admin: true }`)
+    sessionStorage.setItem('user', `{ "name": "${this.getUserName()?.value}", "admin": true }`)
 
     this.router.navigate(['lobby', newPostId]);
     this.dialogRef.close();

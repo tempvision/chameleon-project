@@ -1,7 +1,26 @@
 table {
   width: 100%;
+  border-collapse: collapse;
 }
 
-.highlighted {
-  background-color: yellow;
+th, td {
+  width: calc(100% / 6);
+  text-align: center;
+  padding: 8px;
+}
+
+.chart-table th, .chart-table td {
+  width: calc(100% / 7);
+  text-align: center;
+  border: 1px solid black;
+  padding: 8px;
+}
+
+.category-table th, .chart-table td {
+  width: calc(100% / 7);
+  text-align: center;
+}
+
+.green-bg, .diagonal {
+  background-color: #E3F2E4;
 }
