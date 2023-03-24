@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-gameplay',
@@ -13,14 +14,16 @@ export class GameplayComponent implements OnInit {
   category = [
     'key'
   ]
+  userData: any;
   categories = []
   categorySelected!: boolean;
   selectedRow: any
   allCategories: any
   currentCategory: any;
+  lobbyInfo: any;
 
   dataSource = new MatTableDataSource<string[]>();
-  chartColumns: string[] = ['col0','col1', 'col2', 'col3', 'col4', 'col5', 'col6'];
+  chartColumns: string[] = ['col0', 'col1', 'col2', 'col3', 'col4', 'col5', 'col6'];
   tableData = [
     ['1', "a1", "b2", "c3", "d4", "a2", "b1"],
     ['2', "c4", "d3", "a4", "b3", "c2", "d1"],
@@ -31,15 +34,38 @@ export class GameplayComponent implements OnInit {
     ['7', "a4", "b3", "c2", "d1", "a3", "b4"],
     ['8', "c1", "d2", "a2", "b1", "c3", "d4"]
   ];
+  chameleonTable = [
+    ['1', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['2', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['3', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['4', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['5', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['6', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['7', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['8', 'x', 'x', 'x', 'x', 'x', 'x']
+  ]
+  lobbyId: any;
+  dataRef: any;
+  usersIndex: any;
 
   constructor(
     private db: AngularFireDatabase,
-  ) { }
+    private route: ActivatedRoute
+  ) {
+    this.userData = sessionStorage.getItem('user')
+    if (!this.userData) {
+      // 404
+    } else {
+      this.userData = JSON.parse(this.userData);
+    }
+
+    this.lobbyId = this.route.snapshot.paramMap.get('id')!;
+  }
 
   ngOnInit(): void {
     this.dataSource.data = this.tableData;
     this.db.list('/cards').valueChanges().subscribe((res: any) => {
-  
+
     })
     const objectRef = this.db.object('/cards');
     objectRef.valueChanges().subscribe((data: any) => {
@@ -53,12 +79,36 @@ export class GameplayComponent implements OnInit {
       }) as any;
     });
 
+    this.db.list(`/lobbies/${this.lobbyId}`).snapshotChanges().subscribe((res: Array<any>) => {
+      this.lobbyInfo = res.map((item: any) => {
+        const el: any = {};
+        el[item.payload.key] = item.payload.val();
+        return el;
+      });
+
+      this.lobbyInfo = this.lobbyInfo.reduce((acc: any, el: any, index: number) => {
+        const objKey = Object.keys(this.lobbyInfo[index])[0];
+        acc[objKey] = el[objKey];
+        return acc;
+      }, {})
+
+      this.lobbyInfo.users = this.lobbyInfo.users.map((el: any) => { el.isChameleon = false; return el });
+    })
+
+  }
+
+  nextRound() {
+    this.selectedRow = false;
+    // assign new chameleon
   }
 
   selectRow(event: any) {
+    this.dataRef = this.db.object(`/lobbies/${this.lobbyId}`);
+    this.dataRef.set(this.lobbyInfo); //update lobby with new chameleon
+
     this.selectedRow = true;
     this.currentCategory = this.allCategories[event.key].slice(16)
-    this.items =this.allCategories[event.key].slice(0, 16).reduce((result: any, value: any, index: any) => {
+    this.items = this.allCategories[event.key].slice(0, 16).reduce((result: any, value: any, index: any) => {
       const chunkIndex = Math.floor(index / 4);
       if (!result[chunkIndex]) {
         result[chunkIndex] = [];
@@ -66,7 +116,6 @@ export class GameplayComponent implements OnInit {
       result[chunkIndex].push(value);
       return result;
     }, []);
-    console.log(this.items)
   }
 
 }

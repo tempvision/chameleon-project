@@ -6,7 +6,7 @@
 
   <ng-container matColumnDef="a">
     <th mat-header-cell *matHeaderCellDef>A</th>
-    <td mat-cell *matCellDef="let element; let i=index" [ngClass]="{'diagonal': i % 2 === 0 || i === 0 }">{{ element[0] }} {{ i }} </td>
+    <td mat-cell *matCellDef="let element; let i=index" [ngClass]="{'diagonal': i % 2 === 0 || i === 0 }">{{ element[0] }} </td>
   </ng-container>
 
   <ng-container matColumnDef="b">
@@ -40,6 +40,8 @@
   <tr mat-header-row *matHeaderRowDef="chartColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: chartColumns;"></tr>
 </table>
+
+<button *ngIf="selectedRow && userData.admin" (click)="nextRound()">Next Round</button>
 
 <mat-table [dataSource]="categories" class="mat-elevation-z8" *ngIf="!selectedRow">
   <ng-container matColumnDef="key">
