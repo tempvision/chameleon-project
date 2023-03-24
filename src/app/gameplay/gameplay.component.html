@@ -1,4 +1,4 @@
-<table mat-table [dataSource]="items" class="mat-elevation-z8 category-table" *ngIf="selectedRow">
+<table mat-table [dataSource]="items" class="mat-elevation-z8 category-table" *ngIf="selectedRow || !userData.admin">
   <ng-container matColumnDef="category">
     <th mat-header-cell *matHeaderCellDef>{{currentCategory}}</th>
     <td mat-cell *matCellDef="let element; let i = index">{{ i + 1 }}</td>
@@ -31,7 +31,7 @@
 
 <hr>
 
-<table mat-table [dataSource]="dataSource"  class="mat-elevation-z8 chart-table" *ngIf="selectedRow">
+<table mat-table [dataSource]="dataSource"  class="mat-elevation-z8 chart-table" *ngIf="selectedRow || !userData.admin">
   <ng-container *ngFor="let col of chartColumns; let i = index" [matColumnDef]="col">
     <th mat-header-cell *matHeaderCellDef>{{'•'.repeat(i)}}</th>
     <td mat-cell *matCellDef="let element; let rowIndex = index" [ngClass]="{'green-bg': i > 0 && rowIndex % 2 == i % 2 && element[i] != chartColumns[i]}">{{ element[i] }} </td>
@@ -43,12 +43,12 @@
 
 <button *ngIf="selectedRow && userData.admin" (click)="nextRound()">Next Round</button>
 
-<mat-table [dataSource]="categories" class="mat-elevation-z8" *ngIf="!selectedRow">
+<mat-table [dataSource]="categories" class="mat-elevation-z8" *ngIf="!selectedRow && userData.admin">
   <ng-container matColumnDef="key">
     <mat-header-cell mat-header-cell *matHeaderCellDef> Select Category </mat-header-cell>
     <mat-cell mat-cell *matCellDef="let element"> {{element.key}} </mat-cell>
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="category"></mat-header-row>
-  <mat-row matRipple *matRowDef="let row; columns: category"  (click)="selectRow(row)" [ngClass]="{'highlighted': row === selectedRow}"></mat-row>
+  <mat-row matRipple *matRowDef="let row; columns: category"  (click)="selectCategory(row)" [ngClass]="{'highlighted': row === selectedRow}"></mat-row>
 </mat-table>

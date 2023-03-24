@@ -45,10 +45,15 @@ export class JoinLobbyComponent implements OnInit {
 
     if (searchedLobby > -1) {
       // TO DO: add the unique user id to the lobby
+
+      const users = this.db.list('/users')
+      const newUserRef = users.push(this.getUserName()?.value) // create user
+      const newUserId = newUserRef.key;
+
       const ref = this.db.object(`lobbies/${foundLobby.uniqueId}`);
-      const userRef = foundLobby.users.push({ name: this.getUserName()?.value, admin: false })
+      const userRef = foundLobby.users.push({ name: this.getUserName()?.value, userId: newUserId, admin: false })
       ref.update(foundLobby)
-      sessionStorage.setItem('user', `{ "name": "${this.getUserName()?.value}", "admin": false }`)
+      sessionStorage.setItem('user', `{ "name": "${this.getUserName()?.value}", "userId": "${newUserId}", "admin": false }`)
       this.router.navigate(['lobby', foundLobby.uniqueId]);
       this.dialogRef.close();
     } else {

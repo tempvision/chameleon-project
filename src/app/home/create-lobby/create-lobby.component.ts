@@ -55,16 +55,15 @@ export class CreateLobbyComponent implements OnInit {
     }
 
     const newPostRef = itemsRef.push(lobbyInfo); // get the ref of the newly created item
-    const newPostId = newPostRef.key;
 
     newPostRef.update({
       ...lobbyInfo,
-      uniqueId: newPostId // add the unique id to the new item
+      uniqueId: newPostRef.key // add the unique id to the new item
     })
 
-    sessionStorage.setItem('user', `{ "name": "${this.getUserName()?.value}", "admin": true }`)
+    sessionStorage.setItem('user', `{ "name": "${this.getUserName()?.value}", "userId": "${newUserId}", "admin": true }`)
 
-    this.router.navigate(['lobby', newPostId]);
+    this.router.navigate(['lobby', newPostRef.key]);
     this.dialogRef.close();
 
   }

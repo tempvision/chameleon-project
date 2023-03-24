@@ -23,8 +23,14 @@ export class LobbyComponent implements OnInit {
 
   ngOnInit(): void {
     this.lobbyId = this.activatedRoute.snapshot.paramMap.get('id')!;
-    this.db.list(`/lobbies/${this.lobbyId as string}`).valueChanges().subscribe((res: any) => {
-      this.currentUsers = res[4];
+    this.db.list(`/lobbies/${this.lobbyId as string}`).snapshotChanges().subscribe((res: any) => {
+      const usersIndex = res.findIndex((el: any) => el.key === 'users')
+      this.currentUsers = res[usersIndex].payload.val();
+
+      const gameState = res.findIndex((el: any) => el.key === 'gameState');
+      if (gameState >= 0) {
+        this.startGame();
+      }
     })
   }
 

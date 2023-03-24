@@ -80,19 +80,33 @@ export class GameplayComponent implements OnInit {
     });
 
     this.db.list(`/lobbies/${this.lobbyId}`).snapshotChanges().subscribe((res: Array<any>) => {
-      this.lobbyInfo = res.map((item: any) => {
-        const el: any = {};
-        el[item.payload.key] = item.payload.val();
-        return el;
-      });
 
-      this.lobbyInfo = this.lobbyInfo.reduce((acc: any, el: any, index: number) => {
-        const objKey = Object.keys(this.lobbyInfo[index])[0];
-        acc[objKey] = el[objKey];
+      this.lobbyInfo = res.reduce((acc: any, el: any) => {
+        acc[el.payload.key] = el.payload.val();
         return acc;
       }, {})
 
       this.lobbyInfo.users = this.lobbyInfo.users.map((el: any) => { el.isChameleon = false; return el });
+      if (this.lobbyInfo.gameState.gameStarted && !this.userData.admin) {
+        this.currentCategory = (this.allCategories[this.lobbyInfo.gameState.category]).slice(16)
+        this.items = this.allCategories[this.lobbyInfo.gameState.category].slice(0, 16).reduce((result: any, value: any, index: any) => {
+          const chunkIndex = Math.floor(index / 4);
+          if (!result[chunkIndex]) {
+            result[chunkIndex] = [];
+          }
+          result[chunkIndex].push(value);
+          return result;
+        }, []);
+      }
+
+      if(this.userData.userId === this.lobbyInfo.gameState.chameleon){
+        this.dataSource.data = this.chameleonTable;
+      } else {
+        this.dataSource.data = this.tableData;
+      }
+  
+      console.log(this.lobbyInfo.gameState)
+
     })
 
   }
@@ -100,11 +114,24 @@ export class GameplayComponent implements OnInit {
   nextRound() {
     this.selectedRow = false;
     // assign new chameleon
+    this.lobbyInfo.gameState = {
+      gameStarted: false,
+      category: null,
+    };
+    this.dataRef.update(this.lobbyInfo); //update lobby with new chameleon
   }
 
-  selectRow(event: any) {
+  selectCategory(event: any) {
+
     this.dataRef = this.db.object(`/lobbies/${this.lobbyId}`);
-    this.dataRef.set(this.lobbyInfo); //update lobby with new chameleon
+    const randomUser = this.lobbyInfo.users[Math.floor(Math.random() * this.lobbyInfo.users.length)]
+    
+    this.lobbyInfo.gameState = {
+      gameStarted: true,
+      category: event.key,
+      chameleon: randomUser.userId
+    };
+    this.dataRef.update(this.lobbyInfo); //update lobby with new chameleon
 
     this.selectedRow = true;
     this.currentCategory = this.allCategories[event.key].slice(16)
@@ -116,6 +143,9 @@ export class GameplayComponent implements OnInit {
       result[chunkIndex].push(value);
       return result;
     }, []);
+
+
+
   }
 
 }
