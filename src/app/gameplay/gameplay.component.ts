@@ -105,8 +105,6 @@ export class GameplayComponent implements OnInit {
         this.dataSource.data = this.tableData;
       }
   
-      console.log(this.lobbyInfo.gameState)
-
     })
 
   }
