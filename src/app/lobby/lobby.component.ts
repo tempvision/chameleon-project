@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -7,10 +7,11 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.css'],
 })
-export class LobbyComponent implements OnInit {
+export class LobbyComponent implements OnInit, OnDestroy {
   currentUsers!: Array<any>;
   lobbyId!: any;
   isAdmin!: boolean;
+  LobbySub: any;
 
   constructor(
     private db: AngularFireDatabase,
@@ -23,7 +24,7 @@ export class LobbyComponent implements OnInit {
 
   ngOnInit(): void {
     this.lobbyId = this.activatedRoute.snapshot.paramMap.get('id')!;
-    this.db.list(`/lobbies/${this.lobbyId as string}`).snapshotChanges().subscribe((res: any) => {
+    this.LobbySub = this.db.list(`/lobbies/${this.lobbyId as string}`).snapshotChanges().subscribe((res: any) => {
       const usersIndex = res.findIndex((el: any) => el.key === 'users')
       this.currentUsers = res[usersIndex].payload.val();
 
@@ -36,6 +37,10 @@ export class LobbyComponent implements OnInit {
 
   startGame() {
     this.router.navigate([`game/${this.lobbyId}`])
+  }
+
+  ngOnDestroy(): void {
+    this.LobbySub.unsubscribe();
   }
 
 }
