@@ -18,7 +18,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router
   ) {
-    console.log(sessionStorage.getItem('user'))
     this.isAdmin = JSON.parse(sessionStorage.getItem('user') as any).admin;
   }
 
