@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
+import { map, mergeMap, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-gameplay',
@@ -9,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./gameplay.component.css']
 })
 export class GameplayComponent implements OnInit {
-  items: Array<any> = [];
+  currentCategory: Array<any> = [];
   displayedColumns: string[] = ['category', 'a', 'b', 'c', 'd'];
   category = [
     'key'
@@ -19,7 +20,7 @@ export class GameplayComponent implements OnInit {
   categorySelected!: boolean;
   selectedRow: any
   allCategories: any
-  currentCategory: any;
+  currentCategoryName: any;
   lobbyInfo: any;
 
   dataSource = new MatTableDataSource<string[]>();
@@ -53,60 +54,63 @@ export class GameplayComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.userData = sessionStorage.getItem('user')
-    if (!this.userData) {
-      // 404
-    } else {
+    if (this.userData) {
       this.userData = JSON.parse(this.userData);
+    } else {
+      // 404
     }
-
     this.lobbyId = this.route.snapshot.paramMap.get('id')!;
   }
 
   ngOnInit(): void {
-    this.dataSource.data = this.tableData;
-    this.db.list('/cards').valueChanges().subscribe((res: any) => {
+    this.dataSource.data = this.tableData; // this allows the table mapping
 
-    })
     const objectRef = this.db.object('/cards');
-    objectRef.valueChanges().subscribe((data: any) => {
-      this.allCategories = data
-      this.categories = Object.keys(data).map(el => {
+    objectRef.valueChanges().pipe(mergeMap((cards: any) => {
+      this.allCategories = cards;
+      this.categories = Object.keys(this.allCategories as object).map(el => {
         const name = el
         const obj = {
           key: name
         }
         return obj;
       }) as any;
-    });
 
-    this.db.list(`/lobbies/${this.lobbyId}`).snapshotChanges().subscribe((res: Array<any>) => {
+      return this.db.list(`/lobbies/${this.lobbyId}`).snapshotChanges().pipe(map(res => {
+        this.lobbyInfo = this.getCurrentLobbyInfo(res)
+        this.lobbyInfo.users = this.lobbyInfo.users.map((el: any) => { el.isChameleon = false; return el });
 
-      this.lobbyInfo = res.reduce((acc: any, el: any) => {
-        acc[el.payload.key] = el.payload.val();
-        return acc;
-      }, {})
+        if (this.lobbyInfo.gameState.gameStarted && !this.userData.admin) { // when the admin has already started the game
+          this.currentCategoryName = (this.allCategories[this.lobbyInfo.gameState.category]).slice(16)
+          this.currentCategory = this.mapCategoryTable(this.allCategories)
+        }
 
-      this.lobbyInfo.users = this.lobbyInfo.users.map((el: any) => { el.isChameleon = false; return el });
-      if (this.lobbyInfo.gameState.gameStarted && !this.userData.admin) {
-        this.currentCategory = (this.allCategories[this.lobbyInfo.gameState.category]).slice(16)
-        this.items = this.allCategories[this.lobbyInfo.gameState.category].slice(0, 16).reduce((result: any, value: any, index: any) => {
-          const chunkIndex = Math.floor(index / 4);
-          if (!result[chunkIndex]) {
-            result[chunkIndex] = [];
-          }
-          result[chunkIndex].push(value);
-          return result;
-        }, []);
+        if (this.userData.userId === this.lobbyInfo.gameState.chameleon) { // switch views
+          this.dataSource.data = this.chameleonTable;
+        } else {
+          this.dataSource.data = this.tableData;
+        }
+      }))
+    })).subscribe();
+
+  }
+
+  getCurrentLobbyInfo(data: any) {
+    return data.reduce((acc: any, el: any) => {
+      acc[el.payload.key] = el.payload.val();
+      return acc;
+    }, {})
+  }
+
+  mapCategoryTable(incomingData: any) {
+    return incomingData[this.lobbyInfo.gameState.category].slice(0, 16).reduce((result: any, value: any, index: any) => {
+      const chunkIndex = Math.floor(index / 4);
+      if (!result[chunkIndex]) {
+        result[chunkIndex] = [];
       }
-
-      if(this.userData.userId === this.lobbyInfo.gameState.chameleon){
-        this.dataSource.data = this.chameleonTable;
-      } else {
-        this.dataSource.data = this.tableData;
-      }
-  
-    })
-
+      result[chunkIndex].push(value);
+      return result;
+    }, []);
   }
 
   nextRound() {
@@ -119,21 +123,28 @@ export class GameplayComponent implements OnInit {
     this.dataRef.update(this.lobbyInfo); //update lobby with new chameleon
   }
 
-  selectCategory(event: any) {
-
+  assingNewChameleon(category: any) {
     this.dataRef = this.db.object(`/lobbies/${this.lobbyId}`);
     const randomUser = this.lobbyInfo.users[Math.floor(Math.random() * this.lobbyInfo.users.length)]
-    
+
     this.lobbyInfo.gameState = {
       gameStarted: true,
-      category: event.key,
+      category: category.key,
       chameleon: randomUser.userId
     };
-    this.dataRef.update(this.lobbyInfo); //update lobby with new chameleon
+    this.dataRef.update(this.lobbyInfo); // update lobby with new chameleon
+  }
+
+  selectCategory(event: any) {
+    this.assingNewChameleon(event)
 
     this.selectedRow = true;
-    this.currentCategory = this.allCategories[event.key].slice(16)
-    this.items = this.allCategories[event.key].slice(0, 16).reduce((result: any, value: any, index: any) => {
+    this.currentCategoryName = this.allCategories[event.key].slice(16)
+    this.currentCategory = this.mapTableData(event);
+  }
+
+  mapTableData(category: any) {
+    return this.allCategories[category.key].slice(0, 16).reduce((result: any, value: any, index: any) => {
       const chunkIndex = Math.floor(index / 4);
       if (!result[chunkIndex]) {
         result[chunkIndex] = [];
@@ -141,9 +152,6 @@ export class GameplayComponent implements OnInit {
       result[chunkIndex].push(value);
       return result;
     }, []);
-
-
-
   }
 
 }
