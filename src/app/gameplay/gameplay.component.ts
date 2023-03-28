@@ -80,12 +80,12 @@ export class GameplayComponent implements OnInit {
         this.lobbyInfo = this.getCurrentLobbyInfo(res)
         this.lobbyInfo.users = this.lobbyInfo.users.map((el: any) => { el.isChameleon = false; return el });
 
-        if (this.lobbyInfo.gameState.gameStarted && !this.userData.admin) { // when the admin has already started the game
+        if (this.lobbyInfo?.gameState?.gameStarted && !this.userData?.admin) { // when the admin has already started the game
           this.currentCategoryName = (this.allCategories[this.lobbyInfo.gameState.category]).slice(16)
           this.currentCategory = this.mapCategoryTable(this.allCategories)
         }
 
-        if (this.userData.userId === this.lobbyInfo.gameState.chameleon) { // switch views
+        if (this.userData.userId === this.lobbyInfo?.gameState?.chameleon) { // switch views
           this.dataSource.data = this.chameleonTable;
         } else {
           this.dataSource.data = this.tableData;
