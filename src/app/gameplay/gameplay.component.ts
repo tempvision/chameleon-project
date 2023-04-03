@@ -89,14 +89,13 @@ export class GameplayComponent implements OnInit {
 
         if (this.userData.userId === this.lobbyInfo?.gameState?.chameleon) { // switch views
           this.chartTable.data = this.chameleonTable;
-          this.randomRow = Math.floor(Math.random() * this.chameleonTable.length);
-          this.randomColumn = Math.floor(Math.random() * 6) + 1;;
-
-          console.log(this.randomColumn, this.randomRow)
-          console.log(this.chartTable.data)
         } else {
           this.chartTable.data = this.tableData;
         }
+
+        this.randomRow = this.lobbyInfo?.gameState?.combination?.row;
+        this.randomColumn = this.lobbyInfo?.gameState?.combination?.column;
+
       }))
     })).subscribe();
 
@@ -134,10 +133,17 @@ export class GameplayComponent implements OnInit {
     this.dataRef = this.db.object(`/lobbies/${this.lobbyId}`);
     const randomUser = this.lobbyInfo.users[Math.floor(Math.random() * this.lobbyInfo.users.length)]
 
+    this.randomRow = Math.floor(Math.random() * this.chameleonTable.length);
+    this.randomColumn = Math.floor(Math.random() * 6) + 1;;
+    
     this.lobbyInfo.gameState = {
       gameStarted: true,
       category: category.key,
-      chameleon: randomUser.userId
+      chameleon: randomUser.userId,
+      combination: {
+        row: this.randomRow,
+        column: this.randomColumn
+      }
     };
     this.dataRef.update(this.lobbyInfo); // update lobby with new chameleon
   }

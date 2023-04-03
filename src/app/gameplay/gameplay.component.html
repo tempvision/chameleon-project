@@ -48,6 +48,7 @@
 
 <button class="button-neu" mat-raised-button *ngIf="selectedRow && userData.admin" (click)="nextRound()">Next Round</button>
 
+<!-- select categories -->
 <mat-table [dataSource]="categories" class="mat-elevation-z8" *ngIf="!selectedRow && userData.admin">
   <ng-container matColumnDef="key">
     <mat-header-cell mat-header-cell *matHeaderCellDef> Select Category </mat-header-cell>
