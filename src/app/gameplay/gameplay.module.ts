@@ -5,6 +5,7 @@ import { GameplayRoutingModule } from './gameplay-routing.module';
 import { GameplayComponent } from './gameplay.component';
 
 import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
@@ -15,7 +16,8 @@ import { MatTableModule } from '@angular/material/table';
   imports: [
     CommonModule,
     GameplayRoutingModule,
-    MatTableModule
+    MatTableModule,
+    MatButtonModule,
   ]
 })
 export class GameplayModule { }

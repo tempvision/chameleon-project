@@ -1,8 +1,7 @@
 <div *ngFor="let user of currentUsers; index as i;">
-<p>
-    {{user.name}}
-</p>
+    <mat-card>{{user.name}}</mat-card>
+    <hr>
 </div>
 <button *ngIf="isAdmin" class="button-neu" mat-raised-button (click)="startGame()">
-   Start Game
+    Start Game
 </button>

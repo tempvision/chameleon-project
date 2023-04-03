@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { LobbyRoutingModule } from './lobby-routing.module';
 import { LobbyComponent } from './lobby.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+
 
 
 @NgModule({
@@ -13,7 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [
     CommonModule,
     LobbyRoutingModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCardModule
   ]
 })
 export class LobbyModule { }
