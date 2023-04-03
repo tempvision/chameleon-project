@@ -20,7 +20,7 @@ export class CreateLobbyComponent implements OnInit {
   ngOnInit(): void {
     this.lobbyForm = this.fb.group({
       userName: ['', Validators.required],
-      lobbyName: ['', [Validators.required, Validators.nullValidator]],
+      lobbyName: ['', [Validators.required, Validators.pattern("^[0-9]*$"),]],
       lobbyPassword: ['', Validators.required],
     });
 
@@ -43,6 +43,12 @@ export class CreateLobbyComponent implements OnInit {
     const newUserId = newUserRef.key;
 
     const itemsRef = this.db.list('/lobbies');
+
+    this.checkIfNameIsTaken()
+
+    if (this.lobbyForm.controls['lobbyName'].errors) {
+      return;
+    }
 
     const lobbyInfo = {
       "lobbyName": this.getLobbyName()?.value,
@@ -81,6 +87,15 @@ export class CreateLobbyComponent implements OnInit {
 
   getLobbyName() {
     return this.lobbyForm.get('lobbyName');
+  }
+
+  checkIfNameIsTaken() {
+    const hasAMatch = this.allLobbies.some((el: any) => el.lobbyName.toString() === this.getLobbyName()?.value);
+    if (hasAMatch) {
+      this.lobbyForm.controls['lobbyName'].setErrors({ nameTaken: true });
+    } else {
+      this.lobbyForm.controls['lobbyName'].setErrors(null);
+    }
   }
 
   deleteOldLobbies() {
