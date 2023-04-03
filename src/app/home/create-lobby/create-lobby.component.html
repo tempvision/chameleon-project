@@ -12,6 +12,9 @@
             <mat-form-field appearance="outline">
                 <mat-label>Lobby Name</mat-label>
                 <input matInput placeholder="lobby name" type="text" formControlName="lobbyName">
+                <mat-error *ngIf="lobbyForm.get('lobbyName')?.hasError('nameTaken')">
+      Name already taken!
+    </mat-error>
             </mat-form-field>
         </p>
 

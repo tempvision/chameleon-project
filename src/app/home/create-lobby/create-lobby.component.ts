@@ -20,14 +20,13 @@ export class CreateLobbyComponent implements OnInit {
   ngOnInit(): void {
     this.lobbyForm = this.fb.group({
       userName: ['', Validators.required],
-      lobbyName: ['', Validators.required],
+      lobbyName: ['', [Validators.required, Validators.nullValidator]],
       lobbyPassword: ['', Validators.required],
     });
 
-    const objectRef = this.db.object('/lobbies');
+    const objectRef = this.db.list('/lobbies');
     objectRef.valueChanges().subscribe(res => {
       this.allLobbies = res;
-      // this.deleteOldLobbies()
     })
 
   }
@@ -36,6 +35,8 @@ export class CreateLobbyComponent implements OnInit {
     if (!this.lobbyForm.valid) {
       return;
     }
+
+    this.deleteOldLobbies();
 
     const users = this.db.list('/users')
     const newUserRef = users.push(this.getUserName()?.value) // create user
@@ -83,10 +84,12 @@ export class CreateLobbyComponent implements OnInit {
   }
 
   deleteOldLobbies() {
-    const millisecondsInOneDay: number = 86400000
-    const currentDate: number = new Date().getTime()
-    const olderThenOneDay = Object.keys(this.allLobbies).filter((el: any) => currentDate - el.timestamp > millisecondsInOneDay)
-    // delete the older ones
+    const millisecondsInOneDay: number = 86400000;
+    const currentDate: number = new Date().getTime();
+    const olderThenOneDay = this.allLobbies.filter((el: any) => currentDate - el.timestamp > millisecondsInOneDay).forEach((el: any) => {
+      this.db.list('/lobbies').remove(el);
+      // delete users as well
+    });
   }
 
 }
