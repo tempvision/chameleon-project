@@ -3,25 +3,29 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   width: calc(100% / 6);
   text-align: center;
   padding: 8px;
 }
 
-.chart-table th, .chart-table td {
+.chart-table th,
+.chart-table td {
   width: calc(100% / 7);
   text-align: center;
   border: 1px solid black;
   padding: 8px;
 }
 
-.category-table th, .chart-table td {
+.category-table th,
+.chart-table td {
   width: calc(100% / 7);
   text-align: center;
 }
 
-.green-bg, .diagonal {
+.green-bg,
+.diagonal {
   background-color: #E3F2E4;
 }
 
@@ -31,11 +35,26 @@ th, td {
   margin-bottom: 15px;
   background: linear-gradient(145deg, #cacaca, #f0f0f0);
   box-shadow: 12px 12px 20px #989898,
-      -12px -12px 20px #ffffff;
+    -12px -12px 20px #ffffff;
 }
 
 .button-neu:hover {
   color: #eb930f;
   background: black;
+}
 
+.container-centered {
+  margin: 0 auto;
+  margin-top: 20px;
+  display: block;
+}
+
+mat-header-cell {
+  justify-content: center;
+  font-size: 17px;
+  background-color: #E3F2E4;
+}
+
+mat-cell {
+  justify-content: center;
 }
