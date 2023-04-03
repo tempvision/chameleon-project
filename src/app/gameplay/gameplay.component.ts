@@ -23,7 +23,7 @@ export class GameplayComponent implements OnInit {
   currentCategoryName: any;
   lobbyInfo: any;
 
-  dataSource = new MatTableDataSource<string[]>();
+  chartTable = new MatTableDataSource<string[]>();
   chartColumns: string[] = ['col0', 'col1', 'col2', 'col3', 'col4', 'col5', 'col6'];
   tableData = [
     ['1', "a1", "b2", "c3", "d4", "a2", "b1"],
@@ -48,6 +48,8 @@ export class GameplayComponent implements OnInit {
   lobbyId: any;
   dataRef: any;
   usersIndex: any;
+  randomRow!: number;
+  randomColumn!: number;
 
   constructor(
     private db: AngularFireDatabase,
@@ -63,7 +65,7 @@ export class GameplayComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.dataSource.data = this.tableData; // this allows the table mapping
+    this.chartTable.data = this.tableData; // this allows the table mapping
 
     const objectRef = this.db.object('/cards');
     objectRef.valueChanges().pipe(mergeMap((cards: any) => {
@@ -86,10 +88,14 @@ export class GameplayComponent implements OnInit {
         }
 
         if (this.userData.userId === this.lobbyInfo?.gameState?.chameleon) { // switch views
-          this.dataSource.data = this.chameleonTable;
+          this.chartTable.data = this.chameleonTable;
         } else {
-          this.dataSource.data = this.tableData;
+          this.chartTable.data = this.tableData;
         }
+
+        this.randomRow = this.lobbyInfo?.gameState?.combination?.row;
+        this.randomColumn = this.lobbyInfo?.gameState?.combination?.column;
+
       }))
     })).subscribe();
 
@@ -127,10 +133,17 @@ export class GameplayComponent implements OnInit {
     this.dataRef = this.db.object(`/lobbies/${this.lobbyId}`);
     const randomUser = this.lobbyInfo.users[Math.floor(Math.random() * this.lobbyInfo.users.length)]
 
+    this.randomRow = Math.floor(Math.random() * this.chameleonTable.length);
+    this.randomColumn = Math.floor(Math.random() * 6) + 1;;
+    
     this.lobbyInfo.gameState = {
       gameStarted: true,
       category: category.key,
-      chameleon: randomUser.userId
+      chameleon: randomUser.userId,
+      combination: {
+        row: this.randomRow,
+        column: this.randomColumn
+      }
     };
     this.dataRef.update(this.lobbyInfo); // update lobby with new chameleon
   }
