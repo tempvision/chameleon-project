@@ -20,7 +20,7 @@ export class CreateLobbyComponent implements OnInit {
   ngOnInit(): void {
     this.lobbyForm = this.fb.group({
       userName: ['', Validators.required],
-      lobbyName: ['', [Validators.required, Validators.pattern("^[0-9]*$"),]],
+      lobbyName: ['', [Validators.required]],
       lobbyPassword: ['', Validators.required],
     });
 
@@ -102,7 +102,7 @@ export class CreateLobbyComponent implements OnInit {
     const millisecondsInOneDay: number = 86400000;
     const currentDate: number = new Date().getTime();
     const olderThenOneDay = this.allLobbies.filter((el: any) => currentDate - el.timestamp > millisecondsInOneDay).forEach((el: any) => {
-      this.db.list('/lobbies').remove(el);
+      this.db.list('/lobbies').remove(el.uniqueId);
       // delete users as well
     });
   }
