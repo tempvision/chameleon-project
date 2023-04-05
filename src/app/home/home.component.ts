@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { relative } from 'path';
 import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
 import { JoinLobbyComponent } from './join-lobby/join-lobby.component';
 
