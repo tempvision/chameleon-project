@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 @Component({
@@ -11,86 +11,94 @@ import { Router } from '@angular/router';
 })
 export class CreateLobbyComponent implements OnInit {
   lobbyForm!: FormGroup;
-  allLobbies: any;
-  constructor(private fb: FormBuilder,
+  allLobbies?: Lobby[];
+
+  constructor(
+    private fb: FormBuilder,
     private db: AngularFireDatabase,
     private router: Router,
-    private dialogRef: MatDialogRef<CreateLobbyComponent>) { }
+    private dialogRef: MatDialogRef<CreateLobbyComponent>
+  ) { }
 
   ngOnInit(): void {
     this.lobbyForm = this.fb.group({
       userName: ['', Validators.required],
-      lobbyName: ['', [Validators.required]],
-      lobbyPassword: ['', Validators.required],
+      lobbyName: ['', Validators.required],
+      lobbyPassword: ['', Validators.required]
     });
 
-    const objectRef = this.db.list('/lobbies');
-    objectRef.valueChanges().subscribe(res => {
+    const objectRef = this.db.list<any>('/lobbies');
+    objectRef.valueChanges().subscribe((res: Lobby[]) => {
       this.allLobbies = res;
-    })
-
+    });
   }
 
-  createLobby() {
+  createLobby(): void {
     if (!this.lobbyForm.valid) {
       return;
     }
 
     this.deleteOldLobbies();
 
-    const users = this.db.list('/users')
-    const newUserRef = users.push(this.getUserName()?.value) // create user
-    const newUserId = newUserRef.key;
+    const users = this.db.list('/users');
+    const newUserRef = users.push(this.getUserName()?.value); // create user
+    const newUserId = newUserRef.key as string;
 
-    const itemsRef = this.db.list('/lobbies');
+    const itemsRef = this.db.list<any>('/lobbies');
 
-    this.checkIfNameIsTaken()
+    this.checkIfNameIsTaken();
 
     if (this.lobbyForm.controls['lobbyName'].errors) {
       return;
     }
 
-    const lobbyInfo = {
-      "lobbyName": this.getLobbyName()?.value,
-      "lobbyPassword": this.getLobbyPassword()?.value,
-      "users": [{
+    const lobbyInfo: Lobby = {
+      lobbyName: this.getLobbyName()?.value,
+      lobbyPassword: this.getLobbyPassword()?.value,
+      users: [{
         name: this.getUserName()?.value,
         userId: newUserId,
         admin: true
       }],
-      "timestamp": new Date().getTime(),
-    }
+      timestamp: new Date().getTime()
+    };
 
     const newPostRef = itemsRef.push(lobbyInfo); // get the ref of the newly created item
 
     newPostRef.update({
       ...lobbyInfo,
       uniqueId: newPostRef.key // add the unique id to the new item
-    })
+    });
 
-    sessionStorage.setItem('user', `{ "name": "${this.getUserName()?.value}", "userId": "${newUserId}", "admin": true }`)
+    sessionStorage.setItem(
+      'user',
+      JSON.stringify({
+        name: this.getUserName()?.value,
+        userId: newUserId,
+        admin: true
+      })
+    );
 
     this.router.navigate(['lobby', newPostRef.key]);
     this.dialogRef.close();
-
   }
 
-
-  getUserName() {
+  getUserName(): any {
     return this.lobbyForm.get('userName');
   }
 
-  getLobbyPassword() {
+  getLobbyPassword(): any {
     return this.lobbyForm.get('lobbyPassword');
   }
 
-
-  getLobbyName() {
+  getLobbyName(): any {
     return this.lobbyForm.get('lobbyName');
   }
 
-  checkIfNameIsTaken() {
-    const hasAMatch = this.allLobbies.some((el: any) => el.lobbyName.toString() === this.getLobbyName()?.value);
+  checkIfNameIsTaken(): void {
+    const hasAMatch = this.allLobbies?.some(
+      (el: any) => el.lobbyName.toString() === this.getLobbyName()?.value
+    );
     if (hasAMatch) {
       this.lobbyForm.controls['lobbyName'].setErrors({ nameTaken: true });
     } else {
@@ -101,10 +109,22 @@ export class CreateLobbyComponent implements OnInit {
   deleteOldLobbies() {
     const millisecondsInOneDay: number = 86400000;
     const currentDate: number = new Date().getTime();
-    const olderThenOneDay = this.allLobbies.filter((el: any) => currentDate - el.timestamp > millisecondsInOneDay).forEach((el: any) => {
+    const olderThenOneDay = this.allLobbies?.filter((el: any) => currentDate - el.timestamp > millisecondsInOneDay).forEach((el: any) => {
       this.db.list('/lobbies').remove(el.uniqueId);
       // delete users as well
     });
   }
 
+}
+
+interface Lobby {
+  gameState?: object;
+  lobbyName: string;
+  lobbyPassword: string;
+  users: {
+    name: string;
+    userId: string;
+    admin: boolean;
+  }[];
+  timestamp: number;
 }
