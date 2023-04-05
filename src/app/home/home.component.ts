@@ -10,28 +10,15 @@ import { JoinLobbyComponent } from './join-lobby/join-lobby.component';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
-  modal = false;
-  items: any;
-  constructor(private dialog: MatDialog, private db: AngularFireDatabase) {
-
-  }
-
-  ngOnInit(): void {
-  }
-
+export class HomeComponent {
+  constructor(private dialog: MatDialog, private db: AngularFireDatabase) { }
 
   openCreateLobbyDialog() {
-    this.dialog.open(CreateLobbyComponent, {
-      // hasBackdrop: true
-    });
+    this.dialog.open(CreateLobbyComponent);
   }
 
-
   openJoinLobbyDialog() {
-    this.dialog.open(JoinLobbyComponent, {
-      // hasBackdrop: true
-    });
+    this.dialog.open(JoinLobbyComponent);
   }
 }
 
