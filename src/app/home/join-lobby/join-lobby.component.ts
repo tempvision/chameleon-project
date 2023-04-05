@@ -4,7 +4,6 @@ import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { CreateLobbyComponent } from '../create-lobby/create-lobby.component';
 
 @Component({
   selector: 'app-join-lobby',
@@ -40,12 +39,9 @@ export class JoinLobbyComponent implements OnInit {
 
     const lobby = this.getLobbyName()?.value;
     const searchedLobby = this.items.findIndex((el: any) => el.lobbyName === lobby);
-    const foundLobby = this.items[searchedLobby]
-
 
     if (searchedLobby > -1) {
-      // TO DO: add the unique user id to the lobby
-
+      const foundLobby = this.items[searchedLobby]
       const users = this.db.list('/users')
       const newUserRef = users.push(this.getUserName()?.value) // create user
       const newUserId = newUserRef.key;
