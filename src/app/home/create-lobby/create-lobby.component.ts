@@ -1,35 +1,38 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { LobbyModel } from 'src/app/shared/models/lobby-model';
+
 
 @Component({
   selector: 'app-create-lobby',
   templateUrl: './create-lobby.component.html',
   styleUrls: ['./create-lobby.component.css']
 })
-export class CreateLobbyComponent implements OnInit {
+export class CreateLobbyComponent implements OnInit, OnDestroy {
   lobbyForm!: FormGroup;
-  allLobbies?: Lobby[];
+  allLobbies?: LobbyModel[];
+  lobbySub: Subscription;
 
   constructor(
     private fb: FormBuilder,
     private db: AngularFireDatabase,
     private router: Router,
     private dialogRef: MatDialogRef<CreateLobbyComponent>
-  ) { }
+  ) {
+    this.lobbySub = this.db.list<LobbyModel>('/lobbies').valueChanges().subscribe((res: LobbyModel[]) => {
+      this.allLobbies = res;
+    });
+  }
 
   ngOnInit(): void {
     this.lobbyForm = this.fb.group({
       userName: ['', Validators.required],
       lobbyName: ['', Validators.required],
       lobbyPassword: ['', Validators.required]
-    });
-
-    const objectRef = this.db.list<any>('/lobbies');
-    objectRef.valueChanges().subscribe((res: Lobby[]) => {
-      this.allLobbies = res;
     });
   }
 
@@ -52,11 +55,11 @@ export class CreateLobbyComponent implements OnInit {
       return;
     }
 
-    const lobbyInfo: Lobby = {
+    const lobbyInfo: LobbyModel = {
       lobbyName: this.getLobbyName()?.value,
       lobbyPassword: this.getLobbyPassword()?.value,
       users: [{
-        name: this.getUserName()?.value,
+        name: this.getUserName().value,
         userId: newUserId,
         admin: true
       }],
@@ -73,7 +76,7 @@ export class CreateLobbyComponent implements OnInit {
     sessionStorage.setItem(
       'user',
       JSON.stringify({
-        name: this.getUserName()?.value,
+        name: this.getUserName().value,
         userId: newUserId,
         admin: true
       })
@@ -83,21 +86,21 @@ export class CreateLobbyComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  getUserName(): any {
-    return this.lobbyForm.get('userName');
+  getUserName(): FormGroup {
+    return this.lobbyForm.get('userName') as FormGroup;
   }
 
-  getLobbyPassword(): any {
-    return this.lobbyForm.get('lobbyPassword');
+  getLobbyPassword(): FormGroup {
+    return this.lobbyForm.get('lobbyPassword') as FormGroup;
   }
 
-  getLobbyName(): any {
-    return this.lobbyForm.get('lobbyName');
+  getLobbyName(): FormGroup {
+    return this.lobbyForm.get('lobbyName') as FormGroup;
   }
 
   checkIfNameIsTaken(): void {
     const hasAMatch = this.allLobbies?.some(
-      (el: any) => el.lobbyName.toString() === this.getLobbyName()?.value
+      (el: LobbyModel) => el.lobbyName.toString() === this.getLobbyName().value
     );
     if (hasAMatch) {
       this.lobbyForm.controls['lobbyName'].setErrors({ nameTaken: true });
@@ -109,22 +112,14 @@ export class CreateLobbyComponent implements OnInit {
   deleteOldLobbies() {
     const millisecondsInOneDay: number = 86400000;
     const currentDate: number = new Date().getTime();
-    const olderThenOneDay = this.allLobbies?.filter((el: any) => currentDate - el.timestamp > millisecondsInOneDay).forEach((el: any) => {
+    const olderThenOneDay = this.allLobbies?.filter((el: LobbyModel) => currentDate - el.timestamp > millisecondsInOneDay).forEach((el: LobbyModel) => {
       this.db.list('/lobbies').remove(el.uniqueId);
       // delete users as well
     });
   }
 
-}
+  ngOnDestroy(): void {
+    this.lobbySub.unsubscribe();
+  }
 
-interface Lobby {
-  gameState?: object;
-  lobbyName: string;
-  lobbyPassword: string;
-  users: {
-    name: string;
-    userId: string;
-    admin: boolean;
-  }[];
-  timestamp: number;
 }
