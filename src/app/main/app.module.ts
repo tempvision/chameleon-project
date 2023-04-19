@@ -14,12 +14,11 @@ import { HomeModule } from '../home/home.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameplayModule } from '../gameplay/gameplay.module';
 import { LobbyModule } from '../lobby/lobby.module';
-
+import { HeaderComponent } from '../shared/header/header.component';
+import { FooterComponent } from '../shared/footer/footer.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent, HeaderComponent, FooterComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -28,9 +27,9 @@ import { LobbyModule } from '../lobby/lobby.module';
     HomeModule,
     GameplayModule,
     LobbyModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
