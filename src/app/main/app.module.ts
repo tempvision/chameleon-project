@@ -16,9 +16,15 @@ import { GameplayModule } from '../gameplay/gameplay.module';
 import { LobbyModule } from '../lobby/lobby.module';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
+import { RandomPositionDirective } from '../shared/directives/random-position.directive';
 
 @NgModule({
-  declarations: [AppComponent, HeaderComponent, FooterComponent],
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    FooterComponent,
+    RandomPositionDirective,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
