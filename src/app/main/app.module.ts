@@ -14,11 +14,16 @@ import { HomeModule } from '../home/home.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameplayModule } from '../gameplay/gameplay.module';
 import { LobbyModule } from '../lobby/lobby.module';
-
+import { HeaderComponent } from '../shared/header/header.component';
+import { FooterComponent } from '../shared/footer/footer.component';
+import { RandomPositionDirective } from '../shared/directives/random-position.directive';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HeaderComponent,
+    FooterComponent,
+    RandomPositionDirective,
   ],
   imports: [
     BrowserModule,
@@ -28,9 +33,9 @@ import { LobbyModule } from '../lobby/lobby.module';
     HomeModule,
     GameplayModule,
     LobbyModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
