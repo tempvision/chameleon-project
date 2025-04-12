@@ -1,30 +1,23 @@
-<form [formGroup]="lobbyForm">
-    <h2>Join Lobby</h2>
-    <div class="container-centered">
-        <p>
-            <mat-form-field appearance="outline">
-                <mat-label>Your Name</mat-label>
-                <input matInput placeholder="your name" type="text" formControlName="userName">
-            </mat-form-field>
-        </p>
-
-        <p>
-            <mat-form-field appearance="outline">
-                <mat-label>Lobby Name</mat-label>
-                <input matInput placeholder="lobby name" type="text" formControlName="lobbyName">
-            </mat-form-field>
-        </p>
-
-        <p>
-            <mat-form-field appearance="outline">
-                <mat-label>Lobby Password</mat-label>
-                <input matInput placeholder="password" type="password" formControlName="lobbyPassword">
-            </mat-form-field>
-        </p>
-        <hr>
-        <button class="center-button" mat-raised-button color="primary" type="submit" (click)="joinLobby()">
-            Join Lobby
-        </button>
-    </div>
-
+<div class="lobby-list">
+    <h2>Available Lobbies</h2>
+  <ul class="lobbies-list" *ngIf="lobbies">
+    <li *ngFor="let lobby of lobbies" (click)="showForm = true; selectLobby(lobby)">
+      {{ lobby.lobbyName }}
+    </li>
+  </ul>
+</div>
+<h2 *ngIf="selectedLobby">Join lobby {{ selectedLobby.lobbyName }}</h2>
+<form *ngIf="showForm" [formGroup]="lobbyForm" class="lobby-form">
+  <h2></h2>
+  <mat-form-field appearance="outline">
+    <mat-label>Your Name</mat-label>
+    <input matInput placeholder="your name" type="text" formControlName="userName" required>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Lobby Password</mat-label>
+    <input matInput placeholder="lobby password" type="password" formControlName="lobbyPassword" required>
+  </mat-form-field>
+    <button class="center-button" mat-raised-button color="primary" type="submit" (click)="joinLobby()">
+        Join
+    </button>
 </form>

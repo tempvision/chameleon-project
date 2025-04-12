@@ -12,6 +12,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   lobbyId!: any;
   isAdmin!: boolean;
   LobbySub: any;
+  lobbyName: any;
 
   constructor(
     private db: AngularFireDatabase,
@@ -24,6 +25,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.lobbyId = this.activatedRoute.snapshot.paramMap.get('id')!;
     this.LobbySub = this.db.list(`/lobbies/${this.lobbyId as string}`).snapshotChanges().subscribe((res: any) => {
+this.lobbyName = res[0].payload
       const usersIndex = res.findIndex((el: any) => el.key === 'users')
       this.currentUsers = res[usersIndex].payload.val();
 

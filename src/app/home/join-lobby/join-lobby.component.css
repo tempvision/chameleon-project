@@ -17,3 +17,27 @@
 .container-centered {
     text-align: center;
 }
+
+.lobby-list {
+    list-style: none;
+    padding: 0;
+}
+
+.lobby-list li {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.lobby-list li:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.lobby-form{
+    display: flex;
+    flex-direction: column;
+}
