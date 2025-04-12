@@ -33,6 +33,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/chameleon-project/",
               "budgets": [
                 {
                   "type": "initial",
